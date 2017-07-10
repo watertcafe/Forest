@@ -1,0 +1,309 @@
+         31394 function calls (31360 primitive calls) in 99.534 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1   64.911   64.911   97.513   97.513 Primitives.py:75(__call__)
+       77   22.914    0.298   22.914    0.298 {method 'reduce' of 'numpy.ufunc' objects}
+        1    7.307    7.307    7.307    7.307 {method 'sort' of 'numpy.ndarray' objects}
+        1    1.718    1.718    1.718    1.718 {built-in method osgeo._gdal_array.BandRasterIONumPy}
+        1    0.894    0.894    0.894    0.894 {rasterio._features._rasterize}
+        1    0.723    0.723    8.605    8.605 arraysetops.py:112(unique)
+        1    0.236    0.236    0.236    0.236 {method 'flatten' of 'numpy.ndarray' objects}
+        4    0.222    0.055    0.222    0.055 {built-in method numpy.core.multiarray.concatenate}
+        1    0.166    0.166    0.166    0.166 {method 'fill' of 'numpy.ndarray' objects}
+        1    0.117    0.117    0.117    0.117 {method 'nonzero' of 'numpy.ndarray' objects}
+        1    0.071    0.071    0.123    0.123 IO.py:167(__call__)
+        4    0.068    0.017   99.528   24.882 Primitive.py:48(run_primitive)
+        1    0.051    0.051    0.051    0.051 {built-in method _gdal.Open}
+        1    0.048    0.048    0.048    0.048 {method 'start' of 'fiona.ogrext.Session' objects}
+        1    0.044    0.044    1.823    1.823 IO.py:201(__call__)
+     2240    0.011    0.000    0.017    0.000 iostream.py:180(schedule)
+     2186    0.004    0.000    0.023    0.000 iostream.py:342(write)
+        1    0.004    0.004    0.004    0.004 {built-in method _gdal.Band_GetNoDataValue}
+       12    0.003    0.000    0.003    0.000 {built-in method nt.stat}
+        1    0.003    0.003    0.003    0.003 {built-in method numpy.core.multiarray.zeros}
+      331    0.002    0.000    0.028    0.000 {built-in method builtins.print}
+     2240    0.002    0.000    0.004    0.000 threading.py:1104(is_alive)
+       50    0.001    0.000   22.915    0.458 fromnumeric.py:1710(sum)
+     2241    0.001    0.000    0.001    0.000 {built-in method nt.urandom}
+     2240    0.001    0.000    0.001    0.000 {method 'acquire' of '_thread.lock' objects}
+     2186    0.001    0.000    0.001    0.000 iostream.py:284(_is_master_process)
+     2240    0.001    0.000    0.002    0.000 threading.py:1062(_wait_for_tstate_lock)
+        2    0.001    0.000    0.001    0.000 {built-in method numpy.core.multiarray.empty}
+     2329    0.001    0.000    0.001    0.000 {built-in method builtins.isinstance}
+     2240    0.001    0.000    0.001    0.000 iostream.py:87(_event_pipe)
+  260/254    0.001    0.000    0.003    0.000 arrayprint.py:340(array2string)
+        1    0.001    0.001    0.001    0.001 {method 'start' of 'rasterio._env.GDALEnv' objects}
+        2    0.001    0.000    0.001    0.000 {built-in method _imp.create_dynamic}
+       49    0.001    0.000    0.001    0.000 collection.py:180(driver)
+        9    0.001    0.000    0.001    0.000 arrayprint.py:557(fillFormat)
+     2186    0.000    0.000    0.001    0.000 iostream.py:297(_schedule_flush)
+     2240    0.000    0.000    0.000    0.000 threading.py:506(is_set)
+     2186    0.000    0.000    0.000    0.000 {built-in method nt.getpid}
+        1    0.000    0.000    0.000    0.000 {built-in method _gdal.AllRegister}
+      106    0.000    0.000    0.000    0.000 arrayprint.py:665(__call__)
+  258/256    0.000    0.000    0.002    0.000 numeric.py:1927(array_str)
+      654    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+       50    0.000    0.000   22.914    0.458 _methods.py:31(_sum)
+        1    0.000    0.000    0.000    0.000 Primitives.py:57(__call__)
+        9    0.000    0.000    0.000    0.000 {method 'compress' of 'numpy.ndarray' objects}
+        2    0.000    0.000    0.000    0.000 {built-in method marshal.loads}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:830(get_data)
+      110    0.000    0.000    0.000    0.000 arrayprint.py:642(_digits)
+        1    0.000    0.000    0.000    0.000 {method 'stop' of 'fiona.ogrext.Session' objects}
+        3    0.000    0.000    0.000    0.000 arrayprint.py:475(_formatArray)
+        1    0.000    0.000    0.000    0.000 {method '__enter__' of 'fiona._drivers.GDALEnv' objects}
+        1    0.000    0.000    1.060    1.060 features.py:150(rasterize)
+      107    0.000    0.000    0.000    0.000 arrayprint.py:467(_extendLine)
+    19/11    0.000    0.000    0.003    0.000 <frozen importlib._bootstrap>:989(_handle_fromlist)
+      257    0.000    0.000    0.000    0.000 {method 'item' of 'numpy.ndarray' objects}
+      664    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+        1    0.000    0.000   99.534   99.534 <ipython-input-11-d133f934dfba>:60(testit_forest)
+        1    0.000    0.000    0.002    0.002 gdalnumeric.py:1(<module>)
+        4    0.000    0.000    0.000    0.000 arrayprint.py:589(<listcomp>)
+      361    0.000    0.000    0.000    0.000 {method 'rstrip' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {method 'read' of '_io.FileIO' objects}
+        3    0.000    0.000    0.000    0.000 arrayprint.py:652(__init__)
+        1    0.000    0.000    0.000    0.000 {built-in method io.open}
+       18    0.000    0.000    0.000    0.000 numeric.py:2792(geterr)
+        3    0.000    0.000    0.002    0.001 arrayprint.py:273(_get_format_function)
+       50    0.000    0.000    0.000    0.000 Primitives.py:104(<genexpr>)
+       18    0.000    0.000    0.000    0.000 numeric.py:2692(seterr)
+        1    0.000    0.000    0.001    0.001 gdal_array.py:11(<module>)
+       72    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+        3    0.000    0.000    0.002    0.001 arrayprint.py:237(_get_formatdict)
+       19    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:402(parent)
+        9    0.000    0.000    0.001    0.000 arrayprint.py:543(__init__)
+        1    0.000    0.000    0.048    0.048 collection.py:32(__init__)
+        1    0.000    0.000   99.528   99.528 <ipython-input-11-d133f934dfba>:53(zonalaverage_forest)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1233(find_spec)
+        1    0.000    0.000    0.000    0.000 function_base.py:1709(diff)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.__build_class__}
+        7    0.000    0.000    0.000    0.000 fromnumeric.py:1866(any)
+        2    0.000    0.000    0.001    0.001 numeric.py:1854(array_repr)
+        1    0.000    0.000    0.000    0.000 collection.py:223(filter)
+       16    0.000    0.000    0.000    0.000 {built-in method numpy.core.multiarray.array}
+       32    0.000    0.000    0.000    0.000 {method 'rpartition' of 'str' objects}
+      3/1    0.000    0.000   99.534   99.534 {built-in method builtins.exec}
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:861(_find_spec)
+        3    0.000    0.000    0.002    0.001 arrayprint.py:315(_array2string)
+        2    0.000    0.000    0.000    0.000 Bobs.py:78(__init__)
+        1    0.000    0.000    1.061    1.061 env.py:272(wrapper)
+      149    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+       23    0.000    0.000    0.000    0.000 __init__.py:1542(isEnabledFor)
+       23    0.000    0.000    0.000    0.000 __init__.py:1528(getEffectiveLevel)
+        4    0.000    0.000    0.000    0.000 Bob.py:11(__init__)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:743(get_code)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:159(_get_module_lock)
+        1    0.000    0.000    0.001    0.001 env.py:219(defenv)
+      4/1    0.000    0.000    0.002    0.002 <frozen importlib._bootstrap>:641(_load_unlocked)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:493(_init_module_attrs)
+      3/1    0.000    0.000    0.003    0.003 <frozen importlib._bootstrap>:958(_find_and_load)
+        1    0.000    0.000    0.001    0.001 env.py:171(__enter__)
+        1    0.000    0.000    1.719    1.719 gdal_array.py:310(BandReadAsArray)
+        1    0.000    0.000    0.000    0.000 arrayprint.py:208(_leading_trailing)
+        1    0.000    0.000    0.000    0.000 env.py:90(__init__)
+        1    0.000    0.000    0.000    0.000 {method 'clear_config_options' of 'rasterio._env.ConfigEnv' objects}
+        1    0.000    0.000    0.000    0.000 uuid.py:106(__init__)
+      3/1    0.000    0.000    0.003    0.003 <frozen importlib._bootstrap>:931(_find_and_load_unlocked)
+       23    0.000    0.000    0.000    0.000 __init__.py:1284(debug)
+        1    0.000    0.000    0.000    0.000 dtypes.py:88(get_minimum_dtype)
+        1    0.000    0.000    0.000    0.000 {method 'close' of '_io.BufferedReader' objects}
+        2    0.000    0.000    0.000    0.000 collection.py:398(close)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:263(cache_from_source)
+        1    0.000    0.000    0.000    0.000 env.py:255(delenv)
+        2    0.000    0.000    0.000    0.000 {built-in method rasterio._env.get_gdal_config}
+        1    0.000    0.000    0.000    0.000 imp.py:254(find_module)
+        1    0.000    0.000    0.000    0.000 Bob.py:21(__repr__)
+        1    0.000    0.000    0.117    0.117 fromnumeric.py:55(_wrapfunc)
+        7    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:63(_path_split)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:430(_validate_bytecode_header)
+        9    0.000    0.000    0.000    0.000 ntpath.py:121(splitdrive)
+       18    0.000    0.000    0.000    0.000 {built-in method numpy.core.umath.seterrobj}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:77(acquire)
+        1    0.000    0.000    0.000    0.000 {method 'update_config_options' of 'rasterio._env.ConfigEnv' objects}
+        8    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
+        9    0.000    0.000    0.000    0.000 numeric.py:3085(__init__)
+        1    0.000    0.000    0.000    0.000 env.py:200(__exit__)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:59(<listcomp>)
+        1    0.000    0.000    1.721    1.721 gdal.py:2520(ReadAsArray)
+       11    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:57(_path_join)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:524(spec_from_file_location)
+        4    0.000    0.000    0.000    0.000 ntpath.py:74(join)
+        1    0.000    0.000    0.051    0.051 __init__.py:90(open)
+        6    0.000    0.000    0.000    0.000 os.py:664(__getitem__)
+        3    0.000    0.000    0.001    0.000 arrayprint.py:713(__init__)
+        1    0.000    0.000    0.000    0.000 __init__.py:182(scale)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:146(__enter__)
+        1    0.000    0.000    0.003    0.003 Bobs.py:23(__init__)
+        1    0.000    0.000    0.117    0.117 fromnumeric.py:1471(nonzero)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.sorted}
+        9    0.000    0.000    0.000    0.000 numeric.py:3089(__enter__)
+        1    0.000    0.000   97.582   97.582 Primitive.py:34(__gt__)
+       13    0.000    0.000    0.000    0.000 numeric.py:534(asanyarray)
+        1    0.000    0.000    0.000    0.000 uuid.py:600(uuid4)
+        9    0.000    0.000    0.000    0.000 numeric.py:3094(__exit__)
+        1    0.000    0.000    0.001    0.001 gdal_array.py:13(swig_import_helper)
+        1    0.000    0.000    0.000    0.000 {method 'extend' of 'list' objects}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:304(__exit__)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1117(_get_spec)
+       36    0.000    0.000    0.000    0.000 {built-in method numpy.core.umath.geterrobj}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:102(release)
+        3    0.000    0.000    0.000    0.000 fromnumeric.py:1364(ravel)
+        1    0.000    0.000    0.000    0.000 gdal.py:1842(GetGeoTransform)
+        3    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+        2    0.000    0.000    0.000    0.000 gdal.py:39(_swig_setattr_nondynamic)
+        1    0.000    0.000    0.000    0.000 transform.py:34(from_origin)
+       19    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:208(_verbose_message)
+        3    0.000    0.000    0.000    0.000 arrayprint.py:730(__init__)
+        4    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap>:553(module_from_spec)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1228(_get_spec)
+        3    0.000    0.000    0.000    0.000 genericpath.py:27(isfile)
+        1    0.000    0.000    0.001    0.001 imp.py:330(load_dynamic)
+        1    0.000    0.000    0.000    0.000 uuid.py:226(__str__)
+        1    0.000    0.000    0.000    0.000 collection.py:173(guard_driver_mode)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:57(__init__)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:361(_get_cached)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:485(_compile_bytecode)
+      2/1    0.000    0.000    0.002    0.002 <frozen importlib._bootstrap_external>:672(exec_module)
+        1    0.000    0.000    0.000    0.000 {built-in method _gdal.Dataset_GetRasterBand}
+        1    0.000    0.000    0.000    0.000 __init__.py:261(to_gdal)
+        5    0.000    0.000    0.000    0.000 {built-in method from_bytes}
+        7    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+      8/1    0.000    0.000    0.003    0.003 <frozen importlib._bootstrap>:197(_call_with_frames_removed)
+       21    0.000    0.000    0.000    0.000 {built-in method nt.fspath}
+        1    0.000    0.000    0.001    0.001 <frozen importlib._bootstrap>:664(_load)
+        8    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:75(_path_stat)
+        2    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:919(create_module)
+        6    0.000    0.000    0.000    0.000 os.py:732(encodekey)
+        1    0.000    0.000    0.000    0.000 ntpath.py:199(split)
+        1    0.000    0.000    0.000    0.000 gdal.py:1822(GetRasterBand)
+        1    0.000    0.000    0.000    0.000 {built-in method _gdal.MajorObject_GetMetadataItem}
+        4    0.000    0.000    0.000    0.000 {method 'rsplit' of 'str' objects}
+      2/1    0.000    0.000    0.003    0.003 {built-in method builtins.__import__}
+        4    0.000    0.000    0.000    0.000 _collections_abc.py:664(__contains__)
+        6    0.000    0.000    0.000    0.000 threading.py:1230(current_thread)
+        1    0.000    0.000    0.000    0.000 Bobs.py:44(__init__)
+        3    0.000    0.000    0.000    0.000 arrayprint.py:702(__init__)
+        4    0.000    0.000    0.000    0.000 {built-in method builtins.any}
+        1    0.000    0.000    0.000    0.000 __init__.py:250(__str__)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:153(__exit__)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:85(_path_is_mode_type)
+        1    0.000    0.000    0.001    0.001 imp.py:219(load_module)
+        1    0.000    0.000    0.000    0.000 dtypes.py:165(validate_dtype)
+        1    0.000    0.000    0.000    0.000 __init__.py:166(translation)
+        2    0.000    0.000    0.000    0.000 gdal_array.py:194(flip_code)
+        1    0.000    0.000    0.000    0.000 {built-in method _gdal.Dataset_GetGeoTransform}
+        1    0.000    0.000    0.004    0.004 gdal.py:2264(GetNoDataValue)
+       14    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:355(__init__)
+        5    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:389(cached)
+        1    0.000    0.000    0.000    0.000 imp.py:105(get_suffixes)
+        1    0.000    0.000    0.000    0.000 function_base.py:4951(append)
+        1    0.000    0.000    1.718    1.718 gdal_array.py:141(BandRasterIONumPy)
+       15    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+        9    0.000    0.000    0.000    0.000 {method 'replace' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {method 'format' of 'str' objects}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:297(__enter__)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:52(_r_long)
+        9    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:834(__enter__)
+        9    0.000    0.000    0.000    0.000 arrayprint.py:674(__init__)
+        1    0.000    0.000    0.000    0.000 __init__.py:239(parse_paths)
+        1    0.000    0.000    0.051    0.051 gdal.py:3009(Open)
+        1    0.000    0.000    0.000    0.000 {method 'get_extent' of 'fiona.ogrext.Session' objects}
+        1    0.000    0.000    0.000    0.000 {method 'min' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.000    0.000 {method 'stop' of 'rasterio._env.GDALEnv' objects}
+        3    0.000    0.000    0.000    0.000 {built-in method _functools.reduce}
+        7    0.000    0.000    0.000    0.000 {built-in method builtins.min}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:927(exec_module)
+        7    0.000    0.000    0.000    0.000 _methods.py:37(_any)
+        6    0.000    0.000    0.000    0.000 Primitive.py:23(__repr__)
+        1    0.000    0.000    0.123    0.123 Primitive.py:29(__eq__)
+        2    0.000    0.000    0.000    0.000 {method '__exit__' of 'fiona._drivers.GDALEnv' objects}
+        3    0.000    0.000    0.000    0.000 {built-in method builtins.setattr}
+       13    0.000    0.000    0.000    0.000 {built-in method _imp.release_lock}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:35(_new_module)
+       16    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:307(<genexpr>)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:393(_check_name_wrapper)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:840(path_stats)
+        1    0.000    0.000    1.823    1.823 Primitive.py:39(__lt__)
+        1    0.000    0.000    0.000    0.000 {built-in method _gdal_array.VirtualMem_swigregister}
+        9    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+        4    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {built-in method _imp._fix_co_filename}
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:94(_path_isfile)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1149(find_spec)
+        6    0.000    0.000    0.000    0.000 os.py:726(check_str)
+        1    0.000    0.000    0.000    0.000 transform.py:21(guard_transform)
+        1    0.000    0.000    0.000    0.000 gdal.py:1484(GetMetadataItem)
+        1    0.000    0.000    0.000    0.000 gdal.py:2925(AllRegister)
+        2    0.000    0.000    0.000    0.000 {method 'get_driver' of 'fiona.ogrext.Session' objects}
+        1    0.000    0.000    0.000    0.000 {method 'max' of 'numpy.ndarray' objects}
+       11    0.000    0.000    0.000    0.000 {built-in method builtins.issubclass}
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:37(_relax_case)
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:142(__init__)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:771(find_spec)
+        9    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:838(__exit__)
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1080(_path_importer_cache)
+        1    0.000    0.000    0.002    0.002 genericpath.py:16(exists)
+        1    0.000    0.000    0.000    0.000 __init__.py:374(__mul__)
+        2    0.000    0.000    0.000    0.000 gdal.py:58(_swig_setattr)
+        1    0.000    0.000    0.000    0.000 gdal.py:1796(<lambda>)
+        1    0.000    0.000    0.000    0.000 collection.py:311(__iter__)
+        1    0.000    0.000    0.000    0.000 collection.py:383(bounds)
+        1    0.000    0.000    0.000    0.000 collection.py:420(__exit__)
+        1    0.000    0.000    0.000    0.000 gdal_array.py:94(VirtualMem)
+        3    0.000    0.000    0.000    0.000 {built-in method _imp.is_frozen}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:293(__init__)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:908(__init__)
+        1    0.000    0.000    0.000    0.000 ntpath.py:240(dirname)
+        1    0.000    0.000    0.000    0.000 env.py:183(<setcomp>)
+        3    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x0000000055FFB620}
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:800(__init__)
+        3    0.000    0.000    0.000    0.000 arrayprint.py:751(__init__)
+        6    0.000    0.000    0.000    0.000 {method 'upper' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {method 'isalpha' of 'str' objects}
+       10    0.000    0.000    0.000    0.000 {built-in method _imp.acquire_lock}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:173(cb)
+        2    0.000    0.000    0.000    0.000 numeric.py:463(asarray)
+        1    0.000    0.000    0.000    0.000 IO.py:183(reg)
+        1    0.000    0.000    0.000    0.000 IO.py:248(reg)
+        1    0.000    0.000   99.534   99.534 <string>:1(<module>)
+        1    0.000    0.000    0.000    0.000 {built-in method _gdal_array.TermProgress_swigconstant}
+        1    0.000    0.000    0.000    0.000 {method 'count' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 imp.py:107(<listcomp>)
+        1    0.000    0.000    0.000    0.000 _methods.py:28(_amin)
+        2    0.000    0.000    0.000    0.000 dtypes.py:130(is_ndarray)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _stat.S_ISREG}
+        2    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {method 'pop' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {method 'isalnum' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.abs}
+        2    0.000    0.000    0.000    0.000 {built-in method _imp.exec_dynamic}
+        4    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:410(has_location)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:669(create_module)
+        1    0.000    0.000    0.000    0.000 ntpath.py:33(_get_bothseps)
+        1    0.000    0.000    0.000    0.000 imp.py:108(<listcomp>)
+        1    0.000    0.000    0.000    0.000 _methods.py:25(_amax)
+        1    0.000    0.000    0.000    0.000 gdal.py:2205(<lambda>)
+        1    0.000    0.000    0.000    0.000 collection.py:412(closed)
+        1    0.000    0.000    0.000    0.000 collection.py:423(__del__)
+        1    0.000    0.000    0.000    0.000 gdal_array.py:213(NumericTypeCodeToGDALTypeCode)
+        3    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+        3    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:698(find_spec)
+        2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:825(get_filename)
+        1    0.000    0.000    0.000    0.000 imp.py:109(<listcomp>)
+        1    0.000    0.000    0.000    0.000 gdal.py:1815(<lambda>)
+        1    0.000    0.000    0.000    0.000 collection.py:486(vsi_path)
+        1    0.000    0.000    0.000    0.000 gdal_array.py:218(GDALTypeCodeToNumericTypeCode)
+        1    0.000    0.000    0.000    0.000 {method 'copy' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 collection.py:417(__enter__)
+        1    0.000    0.000    0.000    0.000 {method 'get_fileencoding' of 'fiona.ogrext.Session' objects}
