@@ -1,0 +1,121 @@
+# Profiling for Try 3 (Zone Mask)
+# %load_ext line_profiler
+# %lprun -f PartialSumRasterize.__call__ testit_forest(zonefilename,datafilename)
+
+Total time: 115.946 s
+File: \\files.umn.edu\CLA\Home\eshook\My Documents\Forest\Forest-7-5-17\forest\primitives\Primitives.py
+Function: __callPSRP__ at line 123
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   123                                               def __callPSRP__(self, zone = None, data = None):
+   124                                           
+   125                                                   # Create the transform for rasterio to rasterize the vector zones
+   126                                                   #print("bounds",data.x, data.y, data.x+data.w, data.y+data.h, data.cellsize, data.cellsize)
+   127         1          108    108.0      0.0          transform = rasterio.transform.from_origin(data.x,data.y+data.h,data.cellsize,data.cellsize)
+   128                                                   
+   129                                                   # Create zoneshapes, which is the geometry + state FP
+   130                                                   # FIXME: STATEFP needs to be an attribute to PartialSumRasterizePrim
+   131         1           12     12.0      0.0          zoneshapes = ((f['geometry'],int(f['properties']['STATEFP'])) for f in zone.data)
+   132         1      3739302 3739302.0      1.1          arr = rasterio.features.rasterize(shapes = zoneshapes, out_shape=data.data.shape, transform = transform)
+   133                                                   
+   134                                                   
+   135                                                   # TEMPORARY FOR LOOKING AT THE RESULTS
+   136                                                   if(False):
+   137                                                       with rasterio.open("examples/data/glc2000.tif") as src:
+   138                                                           profile = src.profile
+   139                                                           profile.update(count=1,compress='lzw')
+   140                                                           with rasterio.open('result.tif','w',**profile) as dst:
+   141                                                               dst.write_band(1,arr)
+   142                                                       
+   143                                                       print("arr min=",np.min(arr))
+   144                                                       print("arr max=",np.max(arr))
+   145                                                       #print("arr avg=",np.avg(arr))
+   146                                                       print("arr shape",arr.shape)
+   147                                                   
+   148                                                   
+   149                                                   # Create the key_value output bob
+   150         1           74     74.0      0.0          out_kv = KeyValue(zone.h,zone.w,zone.y,zone.x)
+   151                                           
+   152         1          525    525.0      0.0          print("Processing raster of size",data.nrows,"x",data.ncols)
+   153                                                   
+   154                                                   # Instead of looping over raster we can
+   155                                                   # zip zone[r] and data[r] to get key/value pairs
+   156                                                   # then we can apply for k,v in pairs: d[k] +=v
+   157                                                   # from : https://stackoverflow.com/questions/9285995/python-generator-expression-for-accumulating-dictionary-values
+   158                                                   # look here too : https://bugra.github.io/work/notes/2015-01-03/i-wish-i-knew-these-things-when-i-first-learned-python/
+   159                                                   # Loop over the raster (RLayer)
+   160                                                   '''
+   161                                                   for r in range(len(data.data)):
+   162                                                       for c in range(len(data.data[0])):
+   163                                                           key = str(arr[r][c])
+   164                                                           if key in out_kv.data:
+   165                                                               out_kv.data[key]['val'] += data.data[r][c]
+   166                                                               out_kv.data[key]['cnt'] += 1
+   167                                                           else:
+   168                                                               out_kv.data[key] = {}
+   169                                                               out_kv.data[key]['val'] = data.data[r][c]
+   170                                                               out_kv.data[key]['cnt'] = 1
+   171                                                   '''
+   172                                                   
+   173                                                   #https://docs.scipy.org/doc/numpy-1.12.0/reference/generated/numpy.unique.html#numpy.unique
+   174         1     29082986 29082986.0      8.6          counts = np.unique(arr,return_counts=True)
+   175         1         7978   7978.0      0.0          print("counts=",counts)
+   176                                                   
+   177                                                   # Loop over zone IDs
+   178        51          222      4.4      0.0          for z in counts[0]:
+   179        50         3626     72.5      0.0              print("zoneid",z)
+   180                                                       
+   181                                                   # Create a dictionary from collections.defaultdict
+   182         1           15     15.0      0.0          d=defaultdict(int)
+   183                                                   # Loop over the data and
+   184                                                   # Zip the zone keys (arr) and the data values into key,value pairs
+   185                                                   # Then add up the values from data and put into dictionary
+   186     16354        61028      3.7      0.0          for r in range(len(data.data)):
+   187                                                       
+   188                                                       
+   189     16353        69210      4.2      0.0              if(r%100==0):
+   190       164        23370    142.5      0.0                  print("r=",r,"/",len(data.data))
+   191                                                       #Try 1, too slow    
+   192                                                       #kvzip = zip(arr[r],data.data[r])
+   193                                                       #for k,v in kvzip: d[k]+=v
+   194                                                       
+   195                                                       # Try 2, faster than Try 1, but still too slow.
+   196                                                       '''
+   197                                                       zonerow = arr[r]
+   198                                                       datarow = data.data[r]
+   199                                                       # Loop over unique zones
+   200                                                       for z in counts[0]:
+   201                                                           # This should set elements for zone z to 1, all others to 0
+   202                                                           zonemask = zonerow == z
+   203                                                           # Should zero out entries that are not the same as zone
+   204                                                           # So now you have an array of data elements that all belong to zone z
+   205                                                           datamask = datarow * zonemask
+   206                                                           # Add them all up and put them in the array
+   207                                                           d[z]+=np.sum(datamask)
+   208       164          654      4.0      0.0              '''
+   209                                                   
+   210                                                   # Try 3, zonemask entire arrays (memory intensive, but faster)
+   211        51          648     12.7      0.0          for z in counts[0]:
+   212        50        21175    423.5      0.0              print("z=",z)
+   213                                                       
+   214                                                       # This should set elements for zone z to 1, all others to 0
+   215        50     78071751 1561435.0     23.0              zonemask = arr == z
+   216                                                       # Should zero out entries that are not the same as zone
+   217                                                           # So now you have an array of data elements that all belong to zone z
+   218        50    145357957 2907159.1     42.9              datamask = data.data * zonemask
+   219                                                       # Add them all up and put them in the array
+   220        50     82292625 1645852.5     24.3              d[z]+=np.sum(datamask)
+   221                                                           
+   222                                                   # Loop over d and counts to create output keyvalue bob                
+   223        51          131      2.6      0.0          for i in range(len(counts[0])):
+   224        50          138      2.8      0.0              countskey = counts[0][i]
+   225        50          178      3.6      0.0              countscnt = counts[1][i]
+   226        50          171      3.4      0.0              dsum = d[countskey]
+   227        50          181      3.6      0.0              out_kv.data[countskey] = {}
+   228        50          173      3.5      0.0              out_kv.data[countskey]['val'] = dsum
+   229        50          126      2.5      0.0              out_kv.data[countskey]['cnt'] = countscnt
+   230                                                               
+   231         1       165229 165229.0      0.0          del arr
+   232                                           
+   233         1            6      6.0      0.0          return out_kv
