@@ -171,7 +171,10 @@ class ShapefileNewReadPrim(Primitive):
         crs = None
         features = []
         y = x = h = w = 0.0
-        with fiona.collection(self.filename) as shp:
+        # with fiona.collection(self.filename) as shp:
+        # fiona.collection() is deprecated, but aliased to fiona.open() in version 0.9.
+        # Source: http://toblerity.org/fiona/manual.html#reading-vector-data
+        with fiona.open(self.filename, 'r', encoding='Windows-1252') as shp:
             print("Boundingbox",shp.bounds)
             for feature in shp:
                 features.append(feature)
