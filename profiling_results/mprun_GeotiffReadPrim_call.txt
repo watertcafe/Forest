@@ -1,0 +1,52 @@
+Filename: Z:\NiSE\Luyi_C\MPC\Forest-master\forest\primitives\IO.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+   208     95.1 MiB      0.0 MiB       def __call__(self, inbob = None, filename = None, bandnumber = 1):
+   209                             
+   210     95.1 MiB      0.0 MiB           if filename is not None:
+   211                                         self.filename = filename        
+   212                             
+   213     95.8 MiB      0.7 MiB           ds = gdal.Open(self.filename) # Open gdal dataset
+   214     95.8 MiB      0.0 MiB           if ds is None:
+   215                                         raise PCMLException("Cannot open "+filename+" in ReadGeoTIFF")
+   216                                 
+   217                                     # By default get the first band
+   218     95.8 MiB      0.0 MiB           band = ds.GetRasterBand(bandnumber)
+   219     95.8 MiB      0.0 MiB           ncols = ds.RasterXSize
+   220     95.8 MiB      0.0 MiB           nrows = ds.RasterYSize
+   221                             
+   222                                     
+   223     95.8 MiB      0.0 MiB           if band is None:
+   224                                         print("Cannot read selected band in "+filename+" in ReadGeoTIFF")
+   225                                         raise(Exception)
+   226                                         
+   227     96.2 MiB      0.3 MiB           nodata_value = band.GetNoDataValue()
+   228     96.2 MiB      0.0 MiB           if nodata_value is None:
+   229                                         nodata_value=-9999
+   230     96.2 MiB      0.0 MiB           transform = ds.GetGeoTransform()
+   231     96.2 MiB      0.0 MiB           cellsize = transform[1]
+   232     96.2 MiB      0.0 MiB           origin_x = transform[0]
+   233     96.2 MiB      0.0 MiB           origin_y = transform[3]
+   234     96.2 MiB      0.0 MiB           x=origin_x
+   235     96.2 MiB      0.0 MiB           y=origin_y-nrows*cellsize
+   236     96.2 MiB      0.0 MiB           if(abs(transform[1])!=abs(transform[5])): # pixelwidth=1, pixelheight=5
+   237                                         PCMLUserInformation("Cells of different height and width selecting width not height")
+   238                                 
+   239     96.2 MiB      0.0 MiB           h=float(nrows)*cellsize
+   240     96.2 MiB      0.0 MiB           w=float(ncols)*cellsize
+   241     96.2 MiB      0.0 MiB           layer=Raster(y,x,h,w,None,None,nrows,ncols,cellsize)
+   242   4712.0 MiB   4615.8 MiB           nparr=band.ReadAsArray(0,0,ncols,nrows) 
+   243   4712.0 MiB     -0.0 MiB           layer.data = nparr
+   244                                     #set_nparray(nparr,cellsize,nodata_value)
+   245                                 
+   246   4712.0 MiB      0.0 MiB           del transform
+   247   4712.0 MiB      0.0 MiB           del nparr
+   248   4712.0 MiB      0.0 MiB           del band
+   249   3074.2 MiB  -1637.8 MiB           del ds
+   250   3074.2 MiB      0.0 MiB           nparr=None
+   251   3074.2 MiB      0.0 MiB           ds=None # Close gdal dataset
+   252   3074.2 MiB      0.0 MiB           band=None
+   253                                 
+   254   3074.2 MiB      0.0 MiB           return layer
+

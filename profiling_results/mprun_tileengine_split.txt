@@ -1,0 +1,89 @@
+Filename: Z:\NiSE\Luyi_C\MPC\Forest-master\forest\engines\Engine.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+   120   3074.2 MiB      0.0 MiB       def split(self, bobs):
+   121                                     
+   122                                     # Set the number of tiles to split to
+   123                                     # FIXME: Eventually this should be determined or user-defined.
+   124   3074.2 MiB      0.0 MiB           num_tiles = 2
+   125                                     
+   126                                     # If already split, do nothing.
+   127   3074.2 MiB      0.0 MiB           if self.is_split is True:
+   128                                         return
+   129                                     
+   130   3074.2 MiB      0.0 MiB           new_inputs = []
+   131                                     # Loop over bobs in inputs to split
+   132   3074.2 MiB      0.0 MiB           for bob in Config.inputs:
+   133                                         
+   134                                         # For each bob, create a new split tile (TileEngine :)
+   135   3074.2 MiB     -0.0 MiB               tiles = []
+   136                                         
+   137                                         # Split only works for rasters for now
+   138                                         # For all other data types (e.g., vectors) we just duplicate the data
+   139   3074.2 MiB      0.0 MiB               if not isinstance(bob,Raster): # Check if not a raster
+   140   3074.2 MiB      0.0 MiB                   for tile_index in range(num_tiles):
+   141   3074.2 MiB      0.0 MiB                       tiles.append(bob) # Just copy the entire bob to a tile list
+   142                                                 
+   143   3074.2 MiB      0.0 MiB                   new_inputs.append(tiles) # Now add the tiles to new_inputs
+   144   3074.2 MiB      0.0 MiB                   continue # Now skip to the next bob in the list
+   145                             
+   146                                         # This code will only be reached for Raster data types
+   147   3074.2 MiB      0.0 MiB               assert(isinstance(bob,Raster))
+   148                                         # Sanity check, if tiles are larger than data
+   149   3074.2 MiB      0.0 MiB               if num_tiles > bob.nrows:
+   150                                             num_tiles = bob.nrows # Reset to be 1 row per tile
+   151                                         
+   152                                         # Set tile nrows and ncols
+   153   3074.2 MiB      0.0 MiB               tile_nrows = math.ceil(bob.nrows / num_tiles)
+   154   3074.2 MiB      0.0 MiB               tile_ncols = bob.ncols
+   155                                         
+   156   3074.2 MiB      0.0 MiB               for tile_index in range(num_tiles):
+   157                                             # Calculate the r,c location
+   158   3074.2 MiB      0.0 MiB                   tile_r = tile_nrows * tile_index
+   159   3074.2 MiB      0.0 MiB                   tile_c = 0
+   160                                             
+   161                                             # For the last tile_index, see if we are "too tall"
+   162                                             # Meaning that the tiles are larger than the bob itself
+   163                                             #  split Bob size      > Actual bob size
+   164   3074.2 MiB      0.0 MiB                   if tile_r + tile_nrows > bob.nrows:
+   165                                                 # If so, then resize so it is correct to bob.nrows
+   166   3074.2 MiB      0.0 MiB                       tile_nrows = bob.nrows - tile_r
+   167                                             
+   168                                             # Set tile height and width
+   169   3074.2 MiB      0.0 MiB                   tile_h = bob.cellsize * tile_nrows
+   170   3074.2 MiB      0.0 MiB                   tile_w = bob.w
+   171                             
+   172                                             # Calculate y,x
+   173   3074.2 MiB      0.0 MiB                   tile_y = bob.y + tile_r * bob.cellsize
+   174   3074.2 MiB      0.0 MiB                   tile_x = bob.x
+   175                                             
+   176                                             # Create the tile
+   177   3074.2 MiB      0.0 MiB                   tile = Bob(tile_y,tile_x,tile_h,tile_w)
+   178   3074.2 MiB      0.0 MiB                   tile.nrows = tile_nrows
+   179   3074.2 MiB      0.0 MiB                   tile.ncols = tile_ncols
+   180   3074.2 MiB      0.0 MiB                   tile.r =     tile_r
+   181   3074.2 MiB      0.0 MiB                   tile.c =     tile_c
+   182   3074.2 MiB      0.0 MiB                   tile.cellsize = bob.cellsize
+   183   3074.2 MiB      0.0 MiB                   tile.datatype = bob.datatype
+   184                                             # FIXME: Need a better method to copy these over.
+   185                                             
+   186                                             # Split the data (depends on raster/vector)
+   187   3074.2 MiB      0.0 MiB                   tile.data = bob.get_data(tile_r,tile_c,tile_nrows,tile_ncols)
+   188                                                             
+   189                                             # Save tiles
+   190   3074.2 MiB      0.0 MiB                   tiles.append(tile)
+   191                                         # Save list of tiles (split Bobs) to new inputs
+   192                                         # Notice that they are not grouped as inputs
+   193                                         # So they will need to be zipped
+   194   3074.2 MiB      0.0 MiB               new_inputs.append(tiles)
+   195                                                 
+   196                                     # Now we have new_inputs so rewrite Config.inputs with new list
+   197                                     # Zip the list to create groups of split bobs
+   198                                     # These groups will be input for the primitives
+   199   3074.2 MiB      0.0 MiB           zip_inputs = zip(*new_inputs)
+   200   3074.2 MiB      0.0 MiB           Config.inputs = list(zip_inputs) # Dereference zip object and create a list
+   201                                     
+   202                                     # Set split to True so engine knows that Config.inputs is split                
+   203   3074.2 MiB      0.0 MiB           self.is_split = True
+

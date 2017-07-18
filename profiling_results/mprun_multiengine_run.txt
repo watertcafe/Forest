@@ -1,0 +1,83 @@
+Filename: Z:\NiSE\Luyi_C\MPC\Forest-master\forest\engines\Engine.py
+
+Line #    Mem usage    Increment   Line Contents
+================================================
+   270   3077.3 MiB      0.0 MiB       def run(self, primitive):
+   271   3077.3 MiB      0.0 MiB           print("Running", primitive)
+   272                             
+   273                                     # Get the name of the primitive operation being executed
+   274   3077.3 MiB      0.0 MiB           name = primitive.__class__.__name__
+   275                             
+   276                                     # Get the inputs        
+   277   3077.3 MiB      0.0 MiB           inputs = Config.inputs
+   278                                 
+   279                                     # Save the flows information in the global config data structure
+   280                                     # FIXME: The problem with this solution is all data will be stored
+   281                                     #        indefinitely, which is going to be a huge problem.
+   282   3077.3 MiB      0.0 MiB           Config.flows[name] = {}
+   283   3077.3 MiB      0.0 MiB           Config.flows[name]['input'] = inputs   
+   284                             
+   285                                     #import pdb; pdb.set_trace()
+   286                             
+   287                             
+   288                                     # If Bobs are not split, then it is easy
+   289   3077.3 MiB      0.0 MiB           if Config.engine.is_split is False:
+   290   3077.3 MiB      0.0 MiB               if isinstance(inputs,Bob):     # If it is a bob
+   291   3077.3 MiB      0.0 MiB                   inputs = primitive(inputs)    # Just pass in the bob
+   292                                         else:                          # If it is a list
+   293   3077.3 MiB     -0.0 MiB                   inputs = primitive(*inputs)   # De-reference the list and pass as parameters
+   294                                     
+   295                                     else: # When they are split we have to handle the list of Bobs and run in parallel
+   296                             
+   297                                         # Make a pool of 4 processes
+   298                                         # FIXME: THIS IS FIXED FOR NOW
+   299   3074.2 MiB     -3.1 MiB               pool = multiprocessing.Pool(4)
+   300                                         
+   301                                         # Create a manager for the input and output queues (iq, oq)            
+   302   3074.4 MiB      0.2 MiB               m = multiprocessing.Manager()
+   303   3074.4 MiB      0.0 MiB               iq = m.Queue()
+   304   3074.4 MiB      0.0 MiB               oq = m.Queue()
+   305                                         
+   306                                         # Add split bobs to the input queue to be processed
+   307   3077.2 MiB      2.8 MiB               for splitbobs in inputs:
+   308   3077.2 MiB      0.0 MiB                   iq.put(splitbobs)
+   309                             
+   310                                         # How many times will we run the worker function using map
+   311   3077.2 MiB      0.0 MiB               mapsize = len(inputs)
+   312                                         
+   313                                         # Make a list of ranks, queues, and primitives
+   314                                         # These will be used for map_inputs
+   315   3077.2 MiB      0.0 MiB               ranklist = range(mapsize)
+   316   3077.2 MiB      0.0 MiB               iqlist = [iq for i in range(mapsize)]
+   317   3077.2 MiB      0.0 MiB               oqlist = [oq for i in range(mapsize)]
+   318   3077.2 MiB      0.0 MiB               prlist = [primitive for i in range(mapsize)]
+   319                                     
+   320                                         # Create map inputs by zipping the lists we just created
+   321   3077.2 MiB      0.0 MiB               map_inputs = zip(ranklist,iqlist,oqlist,prlist)
+   322                                                    
+   323                                         # Apply the inputs to the worker function using parallel map
+   324                                         # Results can be printed for output from the worker tasks
+   325   3077.2 MiB      0.0 MiB               results = pool.map(worker, map_inputs)
+   326                                     
+   327                                         # Get the outputs from the output queue and save as new inputs
+   328   3077.2 MiB      0.0 MiB               inputs = []
+   329   3077.3 MiB      0.0 MiB               while not oq.empty():
+   330   3077.3 MiB      0.0 MiB                   output = oq.get() # Get one output from the queue
+   331   3077.3 MiB      0.0 MiB                   inputs.append(output) # Save to inputs
+   332                                         
+   333                                         # Done with the pool so close, then join (wait)
+   334   3077.3 MiB      0.0 MiB               pool.close()
+   335   3077.2 MiB     -0.0 MiB               pool.join()
+   336                             
+   337                                     # Save the outputs from this primitive
+   338   3077.3 MiB      0.0 MiB           Config.flows[name]['output'] = inputs
+   339                                     
+   340                                     # Save inputs from this/these primitive(s), for the next primitive
+   341   3077.3 MiB      0.0 MiB           if primitive.passthrough is False: # Typical case
+   342   3077.3 MiB      0.0 MiB               Config.inputs = inputs # Reset the inputs
+   343                                     else:
+   344   3075.5 MiB     -1.8 MiB               assert(Config.engine.is_split is False)
+   345   3075.5 MiB      0.0 MiB               Config.inputs.append(inputs) # Add to the inputs
+   346                                         
+   347   3077.3 MiB      1.8 MiB           return inputs
+
