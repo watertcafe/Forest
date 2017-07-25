@@ -1,0 +1,124 @@
+starting forest
+ShapefileNewRead register
+GeotiffRead register
+ShapefileNewRead == (Sequence) GeotiffRead
+Running ShapefileNewRead
+Boundingbox (-118.37075042709034, 14.534548000390236, -86.70730590814108, 32.718782999636005)
+GeotiffRead < (Split) PartialSumRasterize
+Running GeotiffRead
+PartialSumRasterize > (Merge) AggregateSum
+Running PartialSumRasterize
+
+---------------------------------------------------------------------------
+RemoteTraceback                           Traceback (most recent call last)
+RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\multiprocessing\pool.py", line 119, in worker
+    result = (True, func(*args, **kwds))
+  File "C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\multiprocessing\pool.py", line 44, in mapstar
+    return list(map(*args))
+  File "Z:\NiSE\Luyi_C\MPC\Forest-master\forest\engines\Engine.py", line 235, in worker
+    out = primitive(*splitbobs)
+  File "Z:\NiSE\Luyi_C\MPC\Forest-master\forest\primitives\Primitives.py", line 150, in __call__
+    zonearr = rasterio.features.rasterize(shapes = zoneshapes, out_shape=data.data.shape, transform = transform)
+  File "C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\site-packages\rasterio\env.py", line 275, in wrapper
+    return f(*args, **kwds)
+  File "C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\site-packages\rasterio\features.py", line 234, in rasterize
+    for index, item in enumerate(shapes):
+  File "Z:\NiSE\Luyi_C\MPC\Forest-master\forest\primitives\Primitives.py", line 149, in <genexpr>
+    zoneshapes = ((f['geometry'],int(f['properties']['STATEFP'])) for f in zone.data)
+KeyError: 'STATEFP'
+"""
+
+The above exception was the direct cause of the following exception:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-2-db0169220373> in <module>()
+     20 
+     21 # %mprun -f GeotiffReadPrim.__call__ testit_forest(zonefilename,datafilename)
+---> 22 get_ipython().magic('mprun -f MultiprocessingEngine.run testit_forest(zonefilename,datafilename)')
+
+C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py in magic(self, arg_s)
+   2156         magic_name, _, magic_arg_s = arg_s.partition(' ')
+   2157         magic_name = magic_name.lstrip(prefilter.ESC_MAGIC)
+-> 2158         return self.run_line_magic(magic_name, magic_arg_s)
+   2159 
+   2160     #-------------------------------------------------------------------------
+
+C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py in run_line_magic(self, magic_name, line)
+   2077                 kwargs['local_ns'] = sys._getframe(stack_depth).f_locals
+   2078             with self.builtin_trap:
+-> 2079                 result = fn(*args,**kwargs)
+   2080             return result
+   2081 
+
+<decorator-gen-124> in mprun(self, parameter_s, cell)
+
+C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\site-packages\IPython\core\magic.py in <lambda>(f, *a, **k)
+    186     # but it's overkill for just that one bit of state.
+    187     def magic_deco(arg):
+--> 188         call = lambda f, *a, **k: f(*a, **k)
+    189 
+    190         if callable(arg):
+
+C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\site-packages\memory_profiler.py in mprun(self, parameter_s, cell)
+    868 
+    869         try:
+--> 870             profile.runctx(arg_str, global_ns, local_ns)
+    871             message = ''
+    872         except SystemExit:
+
+C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\site-packages\memory_profiler.py in runctx(self, cmd, globals, locals)
+    655         self.enable_by_count()
+    656         try:
+--> 657             exec(cmd, globals, locals)
+    658         finally:
+    659             self.disable_by_count()
+
+<string> in <module>()
+
+<ipython-input-1-3250dabd5ca7> in testit_forest(zonefilename, datafilename)
+     64     print("starting forest")
+     65 
+---> 66     zonalaverage = zonalaverage_forest(zonefilename, datafilename)
+     67 
+     68     print("ZonalAverage=",zonalaverage)
+
+<ipython-input-1-3250dabd5ca7> in zonalaverage_forest(zonefilename, datafilename)
+     57     Config.inputs = []
+     58     #output = run_primitive( VectorZoneTest.reg(zonefilename) == RasterDataTest.reg(datafilename) < PartialSum > AggregateSum == Average )
+---> 59     output = run_primitive( ShapefileNewRead.reg(zonefilename) == GeotiffRead.reg(datafilename) < PartialSumRasterize > AggregateSum == Average )
+     60     return output
+     61 
+
+Z:\NiSE\Luyi_C\MPC\Forest-master\forest\primitives\Primitive.py in __gt__(self, right)
+     34     def __gt__(self, right):
+     35         print(self, "> (Merge)", right)
+---> 36         Config.engine.run(self)
+     37         Config.engine.merge(Config.inputs)
+     38         return right
+
+Z:\NiSE\Luyi_C\MPC\Forest-master\forest\engines\Engine.py in run(self, primitive)
+    323             # Apply the inputs to the worker function using parallel map
+    324             # Results can be printed for output from the worker tasks
+--> 325             results = pool.map(worker, map_inputs)
+    326 
+    327             # Get the outputs from the output queue and save as new inputs
+
+C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\multiprocessing\pool.py in map(self, func, iterable, chunksize)
+    258         in a list that is returned.
+    259         '''
+--> 260         return self._map_async(func, iterable, mapstar, chunksize).get()
+    261 
+    262     def starmap(self, func, iterable, chunksize=None):
+
+C:\Users\chen3461\AppData\Local\Continuum\Anaconda3\lib\multiprocessing\pool.py in get(self, timeout)
+    606             return self._value
+    607         else:
+--> 608             raise self._value
+    609 
+    610     def _set(self, i, obj):
+
+KeyError: 'STATEFP'
+
