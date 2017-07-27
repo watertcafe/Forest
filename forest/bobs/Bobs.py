@@ -38,6 +38,13 @@ class Raster(Bob):
         # Create a zero raster array
         self.data = np.zeros((self.nrows,self.ncols))
 
+        #####################################################
+        self.filename = None
+
+        self.nodatavalue = None
+        #####################################################
+
+
     def get_data(self, r, c, rh, cw):
         # Remember, the array is upside down in GIS
         # So when we take a slice, we must do it from the bottom
