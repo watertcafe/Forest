@@ -121,7 +121,8 @@ class TileEngine(Engine):
         
         # Set the number of tiles to split to
         # FIXME: Eventually this should be determined or user-defined.
-        num_tiles = 2
+        num_tiles = Config.n_tile
+        print("-> Number of tiles = ", num_tiles)
         
         # If already split, do nothing.
         if self.is_split is True:
@@ -181,6 +182,12 @@ class TileEngine(Engine):
                 tile.c =     tile_c
                 tile.cellsize = bob.cellsize
                 tile.datatype = bob.datatype
+                
+                ######################################################
+                tile.filename = bob.filename ## FIXME: Will need to copy filename from Raster Bob to each tile
+                tile.nodatavalue = bob.nodatavalue
+                ######################################################
+                
                 # FIXME: Need a better method to copy these over.
                 
                 # Split the data (depends on raster/vector)
@@ -231,13 +238,28 @@ def worker(input_list):
     # Get the split bobs to process
     splitbobs = iq.get()
 
+    ######################################################
+    import gdal
+    tile = splitbobs[1]
+    filehandle = gdal.Open(tile.filename)
+    band = filehandle.GetRasterBand(1)
+    # ncols = filehandle.RasterXSize
+    # nrows = filehandle.RasterYSize
+    tile.data = band.ReadAsArray(tile.c,tile.r,tile.ncols,tile.nrows)
+    ######################################################
+    
     # Run the primitive on the splitbobs, record the output
     out = primitive(*splitbobs)
-
+    
+    ######################################################
+    ## delete the splitbobs.data before passing output 
+    del tile.data                                 
+    ######################################################
+                                     
     oq.put(out) # Save the output in the output queue
 
-    return "worker %d %s" % (rank,splitbobs) # Can be printed if needed
-    
+    return "worker %d %s" % (rank,splitbobs)    
+
 # FIXME: Change to Engines.py    
 class MultiprocessingEngine(Engine):
     def __init__(self):
@@ -296,7 +318,8 @@ class MultiprocessingEngine(Engine):
 
             # Make a pool of 4 processes
             # FIXME: THIS IS FIXED FOR NOW
-            pool = multiprocessing.Pool(4)
+            print("-> Number of processes = ", Config.n_core)
+            pool = multiprocessing.Pool(Config.n_core)
             
             # Create a manager for the input and output queues (iq, oq)            
             m = multiprocessing.Manager()
@@ -323,7 +346,7 @@ class MultiprocessingEngine(Engine):
             # Apply the inputs to the worker function using parallel map
             # Results can be printed for output from the worker tasks
             results = pool.map(worker, map_inputs)
-        
+
             # Get the outputs from the output queue and save as new inputs
             inputs = []
             while not oq.empty():
@@ -353,10 +376,9 @@ mp_engine = MultiprocessingEngine()
 
 # Set the Config.engine as the default
 
-Config.engine = pass_engine
 Config.engine = tile_engine
+Config.engine = pass_engine
 Config.engine = mp_engine
-
 
 print("Default engine",Config.engine)
 
