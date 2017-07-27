@@ -171,10 +171,7 @@ class ShapefileNewReadPrim(Primitive):
         crs = None
         features = []
         y = x = h = w = 0.0
-        # with fiona.collection(self.filename) as shp:
-        # fiona.collection() is deprecated, but aliased to fiona.open() in version 0.9.
-        # Source: http://toblerity.org/fiona/manual.html#reading-vector-data
-        with fiona.open(self.filename, 'r', encoding='Windows-1252') as shp:
+        with fiona.collection(self.filename) as shp:
             print("Boundingbox",shp.bounds)
             for feature in shp:
                 features.append(feature)
@@ -205,7 +202,7 @@ class GeotiffReadPrim(Primitive):
         
     
     # FIXME: inbob is temporary for now, to solve a passthrough issue. Need to fix.
-    def __call__(self, inbob = None, filename = None, bandnumber = 1):
+    def __call__(self, inbob = None, filename = None, bandnumber = 1, paralell = False):
 
         if filename is not None:
             self.filename = filename        
@@ -219,7 +216,8 @@ class GeotiffReadPrim(Primitive):
         ncols = ds.RasterXSize
         nrows = ds.RasterYSize
 
-        
+        # nrows = 10000
+
         if band is None:
             print("Cannot read selected band in "+filename+" in ReadGeoTIFF")
             raise(Exception)
@@ -239,17 +237,22 @@ class GeotiffReadPrim(Primitive):
         h=float(nrows)*cellsize
         w=float(ncols)*cellsize
         layer=Raster(y,x,h,w,None,None,nrows,ncols,cellsize)
-        nparr=band.ReadAsArray(0,0,ncols,nrows) 
-        layer.data = nparr
-        #set_nparray(nparr,cellsize,nodata_value)
-    
+        paralell = True 
+        # forest will freeze if change parallel to True
+        if paralell == False:
+            nparr=band.ReadAsArray(0,0,ncols,nrows) 
+            layer.data = nparr
+        layer.filename = self.filename
+        layer.nodatavalue = nodata_value
+        # set_nparray(nparr,cellsize,nodata_value)
         del transform
-        del nparr
         del band
         del ds
-        nparr=None
+        # del nparr
+        # nparr=None
         ds=None # Close gdal dataset
         band=None
+        print(type(self.filename))
     
         return layer
 
@@ -259,4 +262,4 @@ class GeotiffReadPrim(Primitive):
         return self
     
 GeotiffRead = GeotiffReadPrim()    
-    
+  
