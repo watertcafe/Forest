@@ -240,16 +240,18 @@ def worker(input_list):
 
     ######################################################
     import gdal
+    # from IPython.core.debugger import Tracer
     tile = splitbobs[1]
     filehandle = gdal.Open(tile.filename)
     band = filehandle.GetRasterBand(1)
     # ncols = filehandle.RasterXSize
     # nrows = filehandle.RasterYSize
     tile.data = band.ReadAsArray(tile.c,tile.r,tile.ncols,tile.nrows)
+    # Tracer()()
     ######################################################
     
     # Run the primitive on the splitbobs, record the output
-    out = primitive(*splitbobs)
+    out = primitive[1](tile)
     
     ######################################################
     ## delete the splitbobs.data before passing output 
@@ -303,6 +305,7 @@ class MultiprocessingEngine(Engine):
         #        indefinitely, which is going to be a huge problem.
         Config.flows[name] = {}
         Config.flows[name]['input'] = inputs   
+        print(inputs)
 
         #import pdb; pdb.set_trace()
 
@@ -319,9 +322,14 @@ class MultiprocessingEngine(Engine):
             # Make a pool of 4 processes
             # FIXME: THIS IS FIXED FOR NOW
             print("-> Number of processes = ", Config.n_core)
+
+            # from IPython.core.debugger import Pdb
+            # from IPython.core.debugger import set_trace
+            from IPython.core.debugger import Tracer
             pool = multiprocessing.Pool(Config.n_core)
             
-            # Create a manager for the input and output queues (iq, oq)            
+            # Create a manager for the input and output queues (iq, oq)  
+            Tracer()()
             m = multiprocessing.Manager()
             iq = m.Queue()
             oq = m.Queue()
@@ -332,7 +340,8 @@ class MultiprocessingEngine(Engine):
 
             # How many times will we run the worker function using map
             mapsize = len(inputs)
-            
+            print(mapsize)
+
             # Make a list of ranks, queues, and primitives
             # These will be used for map_inputs
             ranklist = range(mapsize)
