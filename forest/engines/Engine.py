@@ -2,6 +2,7 @@
 Copyright (c) 2017 Eric Shook. All rights reserved.
 Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 @author: eshook (Eric Shook, eshook@gmail.edu)
+@contributors: (Luyi Hunter, chen3461@umn.edu; Xinran Duan, duanx138@umn.edu)
 @contributors: <Contribute and add your name here!>
 """
 
@@ -10,6 +11,7 @@ from ..bobs.Bobs import *
 from . import Config
 import math
 import multiprocessing
+import gdal
 
 
 class Engine(object):
@@ -184,14 +186,15 @@ class TileEngine(Engine):
                 tile.datatype = bob.datatype
                 
                 ######################################################
-                tile.filename = bob.filename ## FIXME: Will need to copy filename from Raster Bob to each tile
+                ## Copy filename from Raster Bob to each tile
+                tile.filename = bob.filename 
                 tile.nodatavalue = bob.nodatavalue
-                ######################################################
                 
                 # FIXME: Need a better method to copy these over.
                 
                 # Split the data (depends on raster/vector)
-                tile.data = bob.get_data(tile_r,tile_c,tile_nrows,tile_ncols)
+                # tile.data = bob.get_data(tile_r,tile_c,tile_nrows,tile_ncols)
+                ######################################################
                                 
                 # Save tiles
                 tiles.append(tile)
@@ -239,23 +242,20 @@ def worker(input_list):
     splitbobs = iq.get()
 
     ######################################################
-    import gdal
-    # from IPython.core.debugger import Tracer
     tile = splitbobs[1]
     filehandle = gdal.Open(tile.filename)
     band = filehandle.GetRasterBand(1)
-    # ncols = filehandle.RasterXSize
-    # nrows = filehandle.RasterYSize
-    tile.data = band.ReadAsArray(tile.c,tile.r,tile.ncols,tile.nrows)
-    # Tracer()()
+    reverse_rnum = filehandle.RasterYSize-tile.r-tile.nrows
+    tile.data = band.ReadAsArray(tile.c,reverse_rnum,tile.ncols,tile.nrows)
     ######################################################
     
     # Run the primitive on the splitbobs, record the output
     out = primitive[1](tile)
     
     ######################################################
-    ## delete the splitbobs.data before passing output 
-    del tile.data                                 
+    ## delete the tile.data before passing output 
+    del tile
+    tile = None
     ######################################################
                                      
     oq.put(out) # Save the output in the output queue
@@ -307,9 +307,6 @@ class MultiprocessingEngine(Engine):
         Config.flows[name]['input'] = inputs   
         print(inputs)
 
-        #import pdb; pdb.set_trace()
-
-
         # If Bobs are not split, then it is easy
         if Config.engine.is_split is False:
             if isinstance(inputs,Bob):     # If it is a bob
@@ -323,13 +320,9 @@ class MultiprocessingEngine(Engine):
             # FIXME: THIS IS FIXED FOR NOW
             print("-> Number of processes = ", Config.n_core)
 
-            # from IPython.core.debugger import Pdb
-            # from IPython.core.debugger import set_trace
-            from IPython.core.debugger import Tracer
             pool = multiprocessing.Pool(Config.n_core)
             
             # Create a manager for the input and output queues (iq, oq)  
-            Tracer()()
             m = multiprocessing.Manager()
             iq = m.Queue()
             oq = m.Queue()
@@ -380,8 +373,6 @@ class MultiprocessingEngine(Engine):
 
     
 mp_engine = MultiprocessingEngine()
-
-
 
 # Set the Config.engine as the default
 
