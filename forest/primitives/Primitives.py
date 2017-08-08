@@ -8,7 +8,7 @@ Use of this source code is governed by a BSD-style license that can be found in 
 import rasterio
 import rasterio.features
 from collections import defaultdict
-
+import pandas as pd
 
 from .Primitive import *
 from ..bobs.Bobs import *
@@ -295,36 +295,32 @@ class PartialSumRasterizePrim(Primitive):
 #             out_kv.data[zoneid]['cnt'] = dict_count[zoneid]
 #         print(out_kv)
         
-        
         # Try 5 np.bincount with pandas.'unique'
         
         zonearr_flat = zonearr.flatten()
+        value_flat = data.data.flatten()
+        empty_value = np.amax(zonearr_flat)+2
+        zonearr_flat[value_flat < (data.nodatavalue+1)] = empty_value
         
         # pandas 'unique'
-        import pandas as pd
         zone_ss = pd.Series(zonearr_flat)
+        # Zip values and counts into small dict and put them into the Bob
         dict_count = zone_ss.value_counts().to_dict()
+        del dict_count[empty_value]
         zonereal = list(dict_count.keys())
         
         # Create a dummy zone id list to match those dummy zone sums created by bincount
         zonedummy = list(range(int(min(zonereal)),int(max(zonereal))+1))
         
         # Conduct Zonal analysis
-        # Bottle-neck 2. np.bincount
-        # zone_df = pd.DataFrame({'index': zonearr_flat, 'value': zonearr_flat})
-        # zone_group = zone_df.groupby(['index'], sort=False).sum()
-        # print(dict(list(zone_group)))
         zonedummy_sums = np.bincount(zonearr_flat, weights=data.data.flatten())
         
         print("Output Length: ", len(zonedummy_sums))
-        print(zonedummy_sums)
         print("Dummy Zone Length: ", len(zonedummy))
-        print(zonedummy)
         print("Real Zone Length: ", len(zonereal))
         
         # Zip zone ids with valid zone sums into a dictionary
         dict_sum = dict(zip(zonedummy, zonedummy_sums.T))
-        # Zip values and counts into small dict and put them into the Bob
         for zoneid in zonereal:
             out_kv.data[zoneid] = {}
             out_kv.data[zoneid]['val'] = dict_sum[zoneid]
@@ -332,6 +328,9 @@ class PartialSumRasterizePrim(Primitive):
         print(out_kv)
         
         del zonearr
+        zonearr = None
+        del value_flat
+        value_flat = None
 
         return out_kv
 
