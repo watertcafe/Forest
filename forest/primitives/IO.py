@@ -2,7 +2,7 @@
 Copyright (c) 2017 Eric Shook. All rights reserved.
 Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 @author: eshook (Eric Shook, eshook@gmail.edu)
-@contributors: (Jacob Arndt, arndt204@umn.edu; )
+@contributors: (Jacob Arndt, arndt204@umn.edu; Luyi Hunter, chen3461@umn.edu; Xinran Duan, duanx138@umn.edu)
 """
 
 # FIXME: We need to have conditional imports here eventually
@@ -237,22 +237,28 @@ class GeotiffReadPrim(Primitive):
         h=float(nrows)*cellsize
         w=float(ncols)*cellsize
         layer=Raster(y,x,h,w,None,None,nrows,ncols,cellsize)
+        
+        ######################################################
+        ## Enable paralell processing
         paralell = True 
-        # forest will freeze if change parallel to True
         if paralell == False:
             nparr=band.ReadAsArray(0,0,ncols,nrows) 
             layer.data = nparr
         layer.filename = self.filename
         layer.nodatavalue = nodata_value
+        ######################################################
         # set_nparray(nparr,cellsize,nodata_value)
         del transform
         del band
         del ds
-        # del nparr
-        # nparr=None
-        ds=None # Close gdal dataset
+        transform=None
+        ds=None 
         band=None
-        print(type(self.filename))
+        ######################################################
+        if paralell == False:
+            del nparr
+            nparr=None
+        ######################################################
     
         return layer
 
