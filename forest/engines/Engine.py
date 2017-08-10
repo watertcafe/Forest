@@ -141,6 +141,9 @@ class TileEngine(Engine):
             # For all other data types (e.g., vectors) we just duplicate the data
             if not isinstance(bob,Raster): # Check if not a raster
                 for tile_index in range(num_tiles):
+                    ######FIX ME: Fetch vector data later in worker#######
+                    # tiles.append('vector')
+                    ###+++++++++++++++++++++++++++++++++++++++++++++++++##
                     tiles.append(bob) # Just copy the entire bob to a tile list
                     
                 new_inputs.append(tiles) # Now add the tiles to new_inputs
@@ -249,8 +252,20 @@ def worker(input_list):
     tile.data = band.ReadAsArray(tile.c,reverse_rnum,tile.ncols,tile.nrows)
     ######################################################
     
+    ######FIX ME: Fetch vector data (does not work for now)########
+    vector_data = []
+    for bob in Config.inputs:
+        if not isinstance(bob,Raster):
+            vector_data.append(bob)
+            break
+        else:
+            continue
     # Run the primitive on the splitbobs, record the output
-    out = primitive[1](tile)
+    out = primitive(vector_data[0], tile)
+    ######+++++++++++++++++++++++++++++++++++++++++++++++++########
+    
+    # Run the primitive on the splitbobs, record the output
+    out = primitive(splitbobs[0], tile)
     
     ######################################################
     ## delete the tile.data before passing output 
