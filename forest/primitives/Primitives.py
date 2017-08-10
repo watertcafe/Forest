@@ -3,7 +3,7 @@ Copyright (c) 2017 Eric Shook. All rights reserved.
 Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 @author: eshook (Eric Shook, eshook@gmail.edu)
 @contributors: (Luyi Hunter, chen3461@umn.edu; Xinran Duan, duanx138@umn.edu)
- @contributors: <Contribute and add your name here!>
+@contributors: <Contribute and add your name here!>
 """
 
 import rasterio
@@ -148,6 +148,7 @@ class PartialSumRasterizePrim(Primitive):
         #arr = rasterio.features.rasterize(shapes = [ (zone.data[0]['geometry'],int(zone.data[0]['properties']['STATEFP'])) ], out_shape=data.data.shape, transform = transform)
         
         zoneshapes = ((f['geometry'],int(f['properties']['STATEFP'])) for f in zone.data)
+        # zoneshapes = ((f['geometry'],int(f['properties']['geoid'])) for f in zone.data)
         zonearr = rasterio.features.rasterize(shapes = zoneshapes, out_shape=data.data.shape, transform = transform)
         
         '''
@@ -164,20 +165,20 @@ class PartialSumRasterizePrim(Primitive):
         arr = rasterio.features.rasterize(shapes = zoneshapes, out_shape=data.data.shape, transform = transform)
         '''
         
-        # TEMPORARY FOR LOOKING AT THE RESULTS
-        if(False):
-            with rasterio.open("examples/data/glc2000.tif") as src:
-                profile = src.profile
-                profile.update(count=1,compress='lzw')
-                with rasterio.open('result.tif','w',**profile) as dst:
-                    dst.write_band(1,arr)
+#         # TEMPORARY FOR LOOKING AT THE RESULTS
+#         if(False):
+#             with rasterio.open("examples/data/glc2000.tif") as src:
+#                 profile = src.profile
+#                 profile.update(count=1,compress='lzw')
+#                 with rasterio.open('result.tif','w',**profile) as dst:
+#                     dst.write_band(1,arr)
             
-            print("arr min=",np.min(arr))
-            print("arr max=",np.max(arr))
-            #print("arr avg=",np.avg(arr))
-            print("arr shape",arr.shape)
+#             print("arr min=",np.min(arr))
+#             print("arr max=",np.max(arr))
+#             #print("arr avg=",np.avg(arr))
+#             print("arr shape",arr.shape)
         
-        print("first entry in arr",zonearr[0][0])
+#         print("first entry in arr",zonearr[0][0])
         
         
         # Create the key_value output bob
@@ -308,30 +309,31 @@ class PartialSumRasterizePrim(Primitive):
         # Zip values and counts into small dict and put them into the Bob
         dict_count = zone_ss.value_counts().to_dict()
         del dict_count[empty_value]
-        zonereal = list(dict_count.keys())
-        
-        # Create a dummy zone id list to match those dummy zone sums created by bincount
-        zonedummy = list(range(int(min(zonereal)),int(max(zonereal))+1))
-        
-        # Conduct Zonal analysis
-        zonedummy_sums = np.bincount(zonearr_flat, weights=data.data.flatten())
-        
-        print("Output Length: ", len(zonedummy_sums))
-        print("Dummy Zone Length: ", len(zonedummy))
-        print("Real Zone Length: ", len(zonereal))
-        
-        # Zip zone ids with valid zone sums into a dictionary
-        dict_sum = dict(zip(zonedummy, zonedummy_sums.T))
-        for zoneid in zonereal:
-            out_kv.data[zoneid] = {}
-            out_kv.data[zoneid]['val'] = dict_sum[zoneid]
-            out_kv.data[zoneid]['cnt'] = dict_count[zoneid]
-        print(out_kv)
+        if len(dict_count) < 1:
+            pass
+        else:
+            zonereal = list(dict_count.keys())
+
+            # Create a dummy zone id list to match those dummy zone sums created by bincount
+            zonedummy = list(range(int(min(zonereal)),int(max(zonereal))+1))
+
+            # Conduct Zonal analysis
+            zonedummy_sums = np.bincount(zonearr_flat, weights=data.data.flatten())
+
+            print("Output Length: ", len(zonedummy_sums))
+            print("Dummy Zone Length: ", len(zonedummy))
+            print("Real Zone Length: ", len(zonereal))
+
+            # Zip zone ids with valid zone sums into a dictionary
+            dict_sum = dict(zip(zonedummy, zonedummy_sums.T))
+            for zoneid in zonereal:
+                out_kv.data[zoneid] = {}
+                out_kv.data[zoneid]['val'] = dict_sum[zoneid]
+                out_kv.data[zoneid]['cnt'] = dict_count[zoneid]
+            print(out_kv)
         
         del zonearr
         zonearr = None
-        del value_flat
-        value_flat = None
 
         return out_kv
 
