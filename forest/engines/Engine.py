@@ -13,6 +13,8 @@ import math
 import multiprocessing
 import gdal
 
+import numpy as np
+import gdal
 
 class Engine(object):
     def __init__(self, engine_type):
@@ -140,7 +142,66 @@ class TileEngine(Engine):
             # Split only works for rasters for now
             # For all other data types (e.g., vectors) we just duplicate the data
             if not isinstance(bob,Raster): # Check if not a raster
+				#spatio temporal point decomposition by box based splitting
+                if isinstance(bob,STPoint):
+                    #this should already be calculated and should be a global parameter
+                    distancebufferinmeters,timebufferinmilliseconds=0,0
+                    xranges=np.linspace(bob.x, bob.x+bob.w, num=num_tiles+1,endpoint=True)
+                    yranges=np.linspace(bob.y, bob.y+bob.h, num=num_tiles+1,endpoint=True)
+                    tranges=np.linspace(bob.s, bob.s+bob.d, num=num_tiles+1,endpoint=True,dtype=np.int64)
+                    boxwidth,boxheight,boxduration=xranges[1]-xranges[0],yranges[1]-yranges[0],tranges[1]-tranges[0]
+                    #create the boxes
+                    for i in xrange(len(xranges)-1):
+                        for j in xrange(len(yranges)-1):
+                            for k in xrange(len(tranges)-1):
+                                #buffer will be used during data addition
+                                box=STPoint(yranges[j],xranges[i], boxheight, boxwidth, tranges[k], boxduration)
+                                box.data=[]
+                                tiles.append(box)
+                    #This should be done in parallel, distribute the bob array, and boxes to cores, and finally merge to get filled bobs
+                    for d in bob.data:
+                        for box in tiles:
+                            #check if the point is with in the buffer ranges
+                            if d['x']>=np.max((box.x-distancebufferinmeters),bob.x) and d['x']<np.min((box.x-distancebufferinmeters+box.w+(2*distancebufferinmeters)),(bob.x+bob.w)) and d['y']>=np.max((box.y-distancebufferinmeters),bob.y) and d['y']<np.min((box.y-distancebufferinmeters+box.h+(2*distancebufferinmeters)),(bob.y+bob.h)) and d['t']>=np.max((box.s-timebufferinmilliseconds),bob.s) and d['t']<np.min((box.s-timebufferinmilliseconds+box.d+(2*timebufferinmilliseconds)),(bob.s+bob.d)):
+                                #Check if with in original box, if with in box add to data, else to halozone
+                                if d['x']>=box.x and d['x']<box.x+box.w and d['y']>=box.y and d['y']<box.y+box.h and d['t']>=box.s and d['t']<box.s+box.d:
+                                    box.data.append(d)
+                                else:
+                                    box.halo.append(d)
+                                continue
+                    new_inputs.append(tiles)
+                    continue
+                #spatial point decomposition by 2D splitting
+                if isinstance(bob,Point):
+                    #this should already be calculated and should be a global parameter
+                    distancebufferinmeters=0
+                    xranges=np.linspace(bob.x, bob.x+bob.w, num=num_tiles+1,endpoint=True)
+                    yranges=np.linspace(bob.y, bob.y+bob.h, num=num_tiles+1,endpoint=True)
+                    boxwidth,boxheight=xranges[1]-xranges[0],yranges[1]-yranges[0]
+                    #create the split boxes
+                    for i in xrange(len(xranges)-1):
+                        for j in xrange(len(yranges)-1):
+                            #buffer will be used during data addition
+                            box=Point(yranges[j],xranges[i], boxheight, boxwidth, 0,0)
+                            box.data=[]
+                            tiles.append(box)
+                    #This should be done in parallel, distribute the bob array, and boxes to cores, and finally merge to get filled bobs
+                    for d in bob.data:
+                        for box in tiles:
+                            #check if the point is with in the buffer ranges
+                            if d['x']>=np.max((box.x-distancebufferinmeters),bob.x) and d['x']<np.min((box.x-distancebufferinmeters+box.w+(2*distancebufferinmeters)),(bob.x+bob.w)) and d['y']>=np.max((box.y-distancebufferinmeters),bob.y) and d['y']<np.min((box.y-distancebufferinmeters+box.h+(2*distancebufferinmeters)),(bob.y+bob.h)):
+                                #Check if with in original box, if with in box add to data, else to halozone
+                                if d['x']>=box.x and d['x']<box.x+box.w and d['y']>=box.y and d['y']<box.y+box.h:
+                                    box.data.append(d)
+                                else:
+                                    box.halo.append(d)
+                                continue
+                    new_inputs.append(tiles)
+                    continue
                 for tile_index in range(num_tiles):
+                    ######FIX ME: Fetch vector data later in worker#######
+                    # tiles.append('vector')
+                    ###+++++++++++++++++++++++++++++++++++++++++++++++++##
                     tiles.append(bob) # Just copy the entire bob to a tile list
                     ######FIX ME: Fetch vector data later in worker#######
                     # tiles.append('vector')
@@ -249,11 +310,16 @@ def worker(input_list):
     tile = splitbobs[1]
     filehandle = gdal.Open(tile.filename)
     band = filehandle.GetRasterBand(1)
+<<<<<<< HEAD
     reverse_rnum = filehandle.RasterYSize-（tile.r+tile.nrows）
+=======
+    reverse_rnum = filehandle.RasterYSize-tile.r-tile.nrows
+>>>>>>> upstream/master
     tile.data = band.ReadAsArray(tile.c,reverse_rnum,tile.ncols,tile.nrows)
     ######################################################
     
     ######FIX ME: Fetch vector data (does not work for now)########
+<<<<<<< HEAD
     # vector_data = []
     # for bob in Config.inputs:
     #    if not isinstance(bob,Raster):
@@ -263,6 +329,17 @@ def worker(input_list):
     #        continue
     # Run the primitive on the splitbobs, record the output
     # out = primitive(vector_data[0], tile)
+=======
+    vector_data = []
+    for bob in Config.inputs:
+        if not isinstance(bob,Raster):
+            vector_data.append(bob)
+            break
+        else:
+            continue
+    # Run the primitive on the splitbobs, record the output
+    out = primitive(vector_data[0], tile)
+>>>>>>> upstream/master
     ######+++++++++++++++++++++++++++++++++++++++++++++++++########
     
     # Run the primitive on the splitbobs, record the output
@@ -321,6 +398,10 @@ class MultiprocessingEngine(Engine):
         #        indefinitely, which is going to be a huge problem.
         Config.flows[name] = {}
         Config.flows[name]['input'] = inputs   
+<<<<<<< HEAD
+=======
+        print(inputs)
+>>>>>>> upstream/master
 
         # If Bobs are not split, then it is easy
         if Config.engine.is_split is False:
@@ -333,7 +414,11 @@ class MultiprocessingEngine(Engine):
 
             # Make a pool of 4 processes
             # FIXME: THIS IS FIXED FOR NOW
+<<<<<<< HEAD
             # print("-> Number of processes = ", Config.n_core)
+=======
+            print("-> Number of processes = ", Config.n_core)
+>>>>>>> upstream/master
 
             pool = multiprocessing.Pool(Config.n_core)
             
@@ -348,6 +433,10 @@ class MultiprocessingEngine(Engine):
 
             # How many times will we run the worker function using map
             mapsize = len(inputs)
+<<<<<<< HEAD
+=======
+            print(mapsize)
+>>>>>>> upstream/master
 
             # Make a list of ranks, queues, and primitives
             # These will be used for map_inputs

@@ -9,8 +9,13 @@ Use of this source code is governed by a BSD-style license that can be found in 
 import rasterio
 import rasterio.features
 from collections import defaultdict
+<<<<<<< HEAD
 import pandas as pd
 import numpy as np
+=======
+import numpy as np
+import pandas as pd
+>>>>>>> upstream/master
 
 from .Primitive import *
 from ..bobs.Bobs import *
@@ -119,7 +124,7 @@ class PartialSumRasterizePrim(Primitive):
         # Call the __init__ for Primitive  
         super(PartialSumRasterizePrim,self).__init__("PartialSumRasterize")
 
-    def __call__(self, zone = None, data = None):
+    def __call__(self, zone = None, data = None, properties_name = None):
 
         #arr = np.zeros((data.nrows,data.ncols))
         
@@ -151,6 +156,7 @@ class PartialSumRasterizePrim(Primitive):
         zoneshapes = ((f['geometry'],int(f['properties']['STATEFP'])) for f in zone.data)
         # zoneshapes = ((f['geometry'],int(f['properties']['geoid'])) for f in zone.data)
         zonearr = rasterio.features.rasterize(shapes = zoneshapes, out_shape=data.data.shape, transform = transform)
+<<<<<<< HEAD
         
         '''
         shapes = []
@@ -161,6 +167,25 @@ class PartialSumRasterizePrim(Primitive):
         
         zoneshapes = ((f['geometry'],f['properties']['STATEFP']) for f in zone.data)
         
+=======
+        
+        '''
+        shapes = []
+        for f in zone.data:
+            shapes.append([ f['geometry'],f['properties']['STATEFP'] ])
+        
+        #shapes = ((geom,value) for geom, value in zip(zone.data[])
+
+        # New way, more generic # FIXME: Return to this
+        properties_name = 'STATEFP' # or 'geoid'
+        
+        # Create zoneshapes, which is the geometry + state FP
+        # zoneshapes = ((f['geometry'],int(f['properties'][properties_name])) for f in zone.data)
+        # arr = rasterio.features.rasterize(shapes = zoneshapes, out_shape=data.data.shape, transform = transform)
+        
+        zoneshapes = ((f['geometry'],f['properties']['STATEFP']) for f in zone.data)
+        
+>>>>>>> upstream/master
         print("zoneshapes[0]=",zoneshapes[0])
         
         arr = rasterio.features.rasterize(shapes = zoneshapes, out_shape=data.data.shape, transform = transform)
@@ -254,8 +279,13 @@ class PartialSumRasterizePrim(Primitive):
 #             datamask = data.data * zonemask
 #             # Add them all up and put them in the array
 #             d[z]+=np.sum(datamask)
+<<<<<<< HEAD
                 
                 
+=======
+                
+                
+>>>>>>> upstream/master
 #         print("d=",d)
         
 #         for i in range(len(counts[0])):
@@ -304,14 +334,18 @@ class PartialSumRasterizePrim(Primitive):
         value_flat = data.data.flatten()
         empty_value = np.amax(zonearr_flat)+2
         zonearr_flat[value_flat < (data.nodatavalue+1)] = empty_value
+<<<<<<< HEAD
         ## print values that used to identify nodata pixels
         #print("empty_value: ", empty_value)
         #print("zonearr_flat: ", zonearr_flat)
+=======
+>>>>>>> upstream/master
         
         # pandas 'unique'
         zone_ss = pd.Series(zonearr_flat)
         # Zip values and counts into small dict and put them into the Bob
         dict_count = zone_ss.value_counts().to_dict()
+<<<<<<< HEAD
         if empty_value in dict_count.keys():
             del dict_count[empty_value]
             if len(dict_count) < 1:
@@ -339,6 +373,31 @@ class PartialSumRasterizePrim(Primitive):
             out_kv.data[zoneid]['val'] = dict_sum[zoneid]
             out_kv.data[zoneid]['cnt'] = dict_count[zoneid]
         print(out_kv)
+=======
+        del dict_count[empty_value]
+        if len(dict_count) < 1:
+            pass
+        else:
+            zonereal = list(dict_count.keys())
+
+            # Create a dummy zone id list to match those dummy zone sums created by bincount
+            zonedummy = list(range(int(min(zonereal)),int(max(zonereal))+1))
+
+            # Conduct Zonal analysis
+            zonedummy_sums = np.bincount(zonearr_flat, weights=data.data.flatten())
+
+            print("Output Length: ", len(zonedummy_sums))
+            print("Dummy Zone Length: ", len(zonedummy))
+            print("Real Zone Length: ", len(zonereal))
+
+            # Zip zone ids with valid zone sums into a dictionary
+            dict_sum = dict(zip(zonedummy, zonedummy_sums.T))
+            for zoneid in zonereal:
+                out_kv.data[zoneid] = {}
+                out_kv.data[zoneid]['val'] = dict_sum[zoneid]
+                out_kv.data[zoneid]['cnt'] = dict_count[zoneid]
+            print(out_kv)
+>>>>>>> upstream/master
         
         del zonearr
         zonearr = None
@@ -346,3 +405,61 @@ class PartialSumRasterizePrim(Primitive):
         return out_kv
 
 PartialSumRasterize = PartialSumRasterizePrim()
+<<<<<<< HEAD
+=======
+
+class NearRepeatPrim(Primitive):
+    def __init__(self):
+
+        # Call the __init__ for Primitive  
+        super(NearRepeatPrim,self).__init__("NearRepeat")
+        
+    #Config should contain global parameters for the primitive
+    def __call__(self, bob):
+        # Create the key_value output bob
+        out_kv = KeyValue()
+        # FIXME: Putting default values as this should be global
+        distanceinterval=1000
+        timeinterval=86400000
+        maxdistance=5000
+        maxtime=432000000
+        timeranges=np.linspace(0,maxtime,num=(maxtime/timeinterval)+1,endpoint=True,dtype=np.int64)
+        distanceranges=np.linspace(0,maxdistance,num=(maxdistance/distanceinterval)+1,endpoint=True)
+        for i in xrange(len(timeranges)-1):
+            for j in xrange(len(distanceranges)-1):
+                out_kv.data[str(timeranges[i])+"-"+str(distanceranges[j])]={'val':0,'cnt':0}
+        #First we calculate inter-distance and inter-time calculation for the bob 
+        for i in xrange(len(bob.data)):
+            for j in xrange(len(bob.data)):
+                if i!=j:
+                    timeshift=np.abs(bob.data[j]['t']-bob.data[i]['t'])
+                    distanceshift= np.linalg.norm(np.asarray([bob.data[j]['x'],bob.data[j]['y']])-np.asarray([bob.data[i]['x'],bob.data[i]['y']]), 2, 0)
+                    for ranges in out_kv.data:
+                        timerange,distancerange=long(ranges.split('-')[0]),int(ranges.split('-')[1])
+                        if timeshift>=timerange and timeshift<timerange+timeinterval and distanceshift>=distancerange and distanceshift<distancerange+distanceinterval:
+                            out_kv.data[ranges]['cnt']+=1
+        #since we are calculating pairs two times, need to divide results by 2
+        for ranges in out_kv.data:
+            out_kv.data[ranges]['cnt']/=2
+        #Boundary calculation,since we have overlapping spatio temporal halo zones we have to avoid duplication
+        for i in xrange(len(bob.halo)):
+            for j in xrange(len(bob.data)):
+                calculate=False
+                #if the bob data is not from the halozone, then we could directly use it for calculations
+                if bob.data[j]['x']>=bob.x+maxdistance and bob.data[j]['x']<bob.x+bob.w-maxdistance and bob.data[j]['y']>=bob.y+maxdistance and bob.data[j]['y']<bob.y+bob.h-maxdistance and bob.data[j]['t']>=bob.s+maxtime and bob.data[j]['t']<bob.s+bob.d-maxtime:
+                    calculate=True
+                #if the bob data is from an internal halo zone we only calculate the forward halozone positions 
+                else:
+                    if bob.halo[i]['x']>=bob.x and bob.halo[i]['x']<bob.x+bob.w+maxdistance and bob.halo[i]['y']>=bob.y and bob.halo[i]['y']<bob.y+bob.h+maxdistance and bob.halo[i]['t']>=bob.s and bob.halo[i]['t']<bob.s+bob.d+maxtime:
+                        calculate=True
+                if calculate:
+                    timeshift=bob.data[j]['t']-bob.halo[i]['t']
+                    distanceshift= np.linalg.norm(np.asarray([bob.data[j]['x'],bob.data[j]['y']])-np.asarray([bob.halo[i]['x'],bob.halo[i]['y']]), 2, 0)
+                    for ranges in out_kv.data:
+                        timerange,distancerange=long(ranges.split('-')[0]),int(ranges.split('-')[1])
+                        if timeshift>=timerange and timeshift<timerange+timeinterval and distanceshift>=distancerange and distanceshift<distancerange+distanceinterval:
+                            out_kv.data[ranges]['cnt']+=1
+        return out_kv
+    
+NearRepeat = NearRepeatPrim()
+>>>>>>> upstream/master
