@@ -141,10 +141,11 @@ class TileEngine(Engine):
             # For all other data types (e.g., vectors) we just duplicate the data
             if not isinstance(bob,Raster): # Check if not a raster
                 for tile_index in range(num_tiles):
+                    tiles.append(bob) # Just copy the entire bob to a tile list
                     ######FIX ME: Fetch vector data later in worker#######
                     # tiles.append('vector')
                     ###+++++++++++++++++++++++++++++++++++++++++++++++++##
-                    tiles.append(bob) # Just copy the entire bob to a tile list
+                    
                     
                 new_inputs.append(tiles) # Now add the tiles to new_inputs
                 continue # Now skip to the next bob in the list
@@ -248,20 +249,20 @@ def worker(input_list):
     tile = splitbobs[1]
     filehandle = gdal.Open(tile.filename)
     band = filehandle.GetRasterBand(1)
-    reverse_rnum = filehandle.RasterYSize-tile.r-tile.nrows
+    reverse_rnum = filehandle.RasterYSize-（tile.r+tile.nrows）
     tile.data = band.ReadAsArray(tile.c,reverse_rnum,tile.ncols,tile.nrows)
     ######################################################
     
     ######FIX ME: Fetch vector data (does not work for now)########
-    vector_data = []
-    for bob in Config.inputs:
-        if not isinstance(bob,Raster):
-            vector_data.append(bob)
-            break
-        else:
-            continue
+    # vector_data = []
+    # for bob in Config.inputs:
+    #    if not isinstance(bob,Raster):
+    #        vector_data.append(bob)
+    #        break
+    #    else:
+    #        continue
     # Run the primitive on the splitbobs, record the output
-    out = primitive(vector_data[0], tile)
+    # out = primitive(vector_data[0], tile)
     ######+++++++++++++++++++++++++++++++++++++++++++++++++########
     
     # Run the primitive on the splitbobs, record the output
@@ -320,7 +321,6 @@ class MultiprocessingEngine(Engine):
         #        indefinitely, which is going to be a huge problem.
         Config.flows[name] = {}
         Config.flows[name]['input'] = inputs   
-        print(inputs)
 
         # If Bobs are not split, then it is easy
         if Config.engine.is_split is False:
@@ -333,7 +333,7 @@ class MultiprocessingEngine(Engine):
 
             # Make a pool of 4 processes
             # FIXME: THIS IS FIXED FOR NOW
-            print("-> Number of processes = ", Config.n_core)
+            # print("-> Number of processes = ", Config.n_core)
 
             pool = multiprocessing.Pool(Config.n_core)
             
@@ -348,7 +348,6 @@ class MultiprocessingEngine(Engine):
 
             # How many times will we run the worker function using map
             mapsize = len(inputs)
-            print(mapsize)
 
             # Make a list of ranks, queues, and primitives
             # These will be used for map_inputs
